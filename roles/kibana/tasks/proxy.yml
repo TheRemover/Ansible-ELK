@@ -1,0 +1,14 @@
+---
+- name: Set htpasswd
+  htpasswd:
+    path: "/etc/nginx/htpasswd.users"
+    name: "{{user_name}}"
+    password: "{{user_password}}"
+    state: present
+- name: Set Nginx config
+  become: yes
+  template:
+    src: templates/default.j2
+    dest: /etc/nginx/sites-available/default
+  notify:
+    - Restart nginx

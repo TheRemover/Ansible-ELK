@@ -1,0 +1,10 @@
+network.host: {{ bind_address }}
+{% if http_port is defined %}
+  http.port: {{ http_port }}
+{% endif %}
+{% if cluster_name is defined %}
+  cluster.name: {{cluster_name}}
+{% endif %}
+{% if node_name is defined %}
+  node.name: {{node_name}}
+{% endif %}

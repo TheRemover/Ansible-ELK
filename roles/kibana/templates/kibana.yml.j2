@@ -1,0 +1,10 @@
+server.host: {{ bind_address }}
+{% if server_name is defined %}
+  server.name: {{ server_name }}
+{% endif %}
+{% if elasticsearch_url is defined %}
+  elasticsearch.url: {{elasticsearch_url}}
+{% endif %}
+{% if kibana_index is defined %}
+  kibana_index: {{kibana_index}}
+{% endif %}

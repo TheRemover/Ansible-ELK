@@ -1,0 +1,24 @@
+---
+- name: Add apt-key
+  become: yes
+  apt_key: 
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+- name: Add Elasticsearch Repository
+  become: yes
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/5.x/apt stable main
+    state: present
+- name: Install Elasticsearch
+  become: yes
+  apt:
+    name: elasticsearch
+    update_cache: yes
+    state: present
+- name: Copy Template
+  become: yes
+  template:
+    src: templates/elasticsearch.yml.j2
+    dest: /etc/elasticsearch/elasticsearch.yml
+  notify: 
+    - Start Elasticsearch

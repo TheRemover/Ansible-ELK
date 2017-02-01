@@ -1,0 +1,43 @@
+---
+- name: Add Logstash apt-key
+  become: yes
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+- name: Add Logstash Repository
+  become: yes
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/5.x/apt stable main
+    state: present
+- name: Install Logstash
+  become: yes
+  apt:
+    name: logstash
+    update_cache: yes
+    state: present
+- name: Create SSL directorys
+  file: path=/etc/pki/tls/certs state=directory
+- file: path=/etc/pki/tls/private state=directory
+- name: Generate SSL Certificate
+  command: openssl req -new -nodes -x509 -subj "/CN=${fqdn}" -x509 -days 3650 -batch -nodes -newkey rsa:2048 -keyout /etc/pki/tls/private/logstash-forwarder.key -out /etc/pki/tls/certs/logstash-forwarder.crt
+  notify: Restart nginx
+- name: Copy Logstash Input configs
+  copy:
+    src: files/02-beats-input.conf
+    dest: /etc/logstash/conf.d
+- name: Copy Logstash Filter configs
+  copy:
+    src: files/10-syslog-filter.conf
+    dest: /etc/logstash/conf.d
+- name: Copy Logstash Output configs
+  copy:
+    src: files/30-elasticsearch-output.conf
+    dest: /etc/logstash/conf.d
+- name: Download Dashboard
+  get_url:
+    url: https://download.elastic.co/beats/dashboards/beats-dashboards-1.2.2.zip
+    dest: /tmp/beats-dashboards-1.2.2.zip
+- name: Unzip Dashboard
+  unarchive: src=/tmp/beats-dashboards-1.2.2.zip dest=/tmp
+- name: Load Dashboard
+  command: /tmp/beats-dashboads-1.2.2/load.sh

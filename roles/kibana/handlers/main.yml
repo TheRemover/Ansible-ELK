@@ -1,0 +1,5 @@
+---
+- name: Start Kibana
+  service: enabled=yes name=kibana state=restarted 
+- name: Restart nginx
+  service: name=nginx state=restarted

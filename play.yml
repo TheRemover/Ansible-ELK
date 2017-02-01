@@ -1,0 +1,9 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - role: nginx
+    - role: java8-oracle
+    - role: elasticsearch
+    - role: kibana
+    - role: logstash
